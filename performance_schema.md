@@ -15,6 +15,7 @@ Briefly saying, MySQL's implementation of ***PS*** include two parts:
 After checked with MySQL InnoDB developers, we confirmed that `5-10%` performance degradation will incur after turning on ***PS*** feature w/ common used instrumentation points in most production systems.
 <br/><br/>
 For more details about MySQL ***PS***, please refer to MySQL 5.7 Reference Manual [1-2].
+
 ##Ideas of TiDB's performance_schema
 Generally saying, we want to port MySQL ***PS*** feature to TiDB, but we'are not going to replicate it, too many implementation related details inside, we are going to implement TiDB ***PS*** feature step by step.
 <br/><br/>
@@ -32,13 +33,16 @@ Because TiDB is a stateless SQL engine similar to Google F1, we also several oth
 * Since TiDB server is written in Golang, which is lockless and depends on goroutines, all **wait** related event (mutex/rwlock/sxlock/cond) and **thread** related events will not occur in TiDB ***PS*** framework.
 
 Also, from the implementation perspective, even TiDB can support multiple storage engines, but can't support different tables for different storage engines, so we will introduce a `performance_schema` database, but won't introduce a `PERFORMANCE_SCHEMA` storage engine.
+
 ##Implementation of TiDB's performance_schema
+
 ###3-Free Fules
 The implementation needs to follow the 3-free rules:
 
 * **Malloc** free
 * **Mutex** free
 * **Rwlock** free
+
 ###Setup Tables
 Like MySQL, we also have several setup tables:
 
@@ -56,6 +60,7 @@ The initialization values of these setup tables are also similar to MySQL 5.7 ex
 	* **Statement**: An instrumented statemenet event.
 	* **Transaction**: An instrumented transaction event. This instrument has no further components.
 * TiDB does not have `CYCLE` or `TICK` timer type since we have no **wait** or **thread** related events.
+
 ###Statement Event Tables
 So far, TiDB has the following tables related to statement events:
 
@@ -65,6 +70,7 @@ So far, TiDB has the following tables related to statement events:
 * **prepared\_statements_instances**: Prepared statement instances and statistics
 
 Summary tables related to statement events will not be implemented so far.
+
 ###Transaction Event Tables
 So far, TiDB has the following tables related to transaction events:
 
@@ -73,6 +79,7 @@ So far, TiDB has the following tables related to transaction events:
 * **events\_transactions\_history\_long**: The most recent transaction events overall
 
 Summary tables related to transaction events will not be implemented so far.
+
 ###Stage Event Tables
 So far, TiDB has the follwing tables related to stage events:
 
@@ -81,15 +88,19 @@ So far, TiDB has the follwing tables related to stage events:
 * **events\_stages\_history\_long**: The most recent stage events overall
 
 Summary tables related to stage events will not be implemented so far.
+
 ###Dependent Components
 * [rcrowley/go-metrics](https://github.com/rcrowley/go-metrics): we use this library to implement **Instrumentation Point**.
 * [syndtr/goleveldb](https://github.com/syndtr/goleveldb): this is the default storage engine of TiDB, but since TiDB can't support multiple storage engines at the same time, so our framework may need to invoke its key-value interfaces directly, *goleveldb* will be used in memory mode in order not to persist any data.
+
 ###Tools Compatibility
 We would like to make TiDB's performance_schema to be compatible w/ MySQL's state-of-the-art tools such as MySQL Workbench, however, much of MySQL's instrumentation points are related to InnoDB storage engine, this is quite different from TiDB's, thus 100% compatibility is impossible.
 <br/><br/>
 So far, all tables in TiDB `performance_schema` can find an equivalent in MySQL, and all fields are the same.
+
 ###To Be Clarified
 * Many tables in MySQL `performance_schema` has the field `THREAD_ID`, but TiDB is written in Go, goroutines is much lighter than thread, and is not that fixed (one thread for one connection), then, what to put in `THREAD_ID` field?
+
 ##References
 [1] [MySQL 5.7 Reference Manual  /  MySQL Performance Schema](http://dev.mysql.com/doc/refman/5.7/en/performance-schema.html)
 <br/>
