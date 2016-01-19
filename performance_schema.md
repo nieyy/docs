@@ -65,7 +65,7 @@ The initialization values of these setup tables are also similar to MySQL 5.7 ex
 So far, TiDB has the following tables related to statement events:
 
 * **events\_statements\_current**: Current statement events
-* **events\_statements\_history**: The most recent statement events for each thread
+* **events\_statements\_history**: The most recent statement events for each connection
 * **events\_statements\_history\_long**: The most recent statement events overall
 * **prepared\_statements_instances**: Prepared statement instances and statistics
 
@@ -75,7 +75,7 @@ Summary tables related to statement events will not be implemented so far.
 So far, TiDB has the following tables related to transaction events:
 
 * **events\_transactions\_current**: Current transaction events
-* **events\_transactions\_history**: The most recent transaction events for each thread
+* **events\_transactions\_history**: The most recent transaction events for each connection
 * **events\_transactions\_history\_long**: The most recent transaction events overall
 
 Summary tables related to transaction events will not be implemented so far.
@@ -84,7 +84,7 @@ Summary tables related to transaction events will not be implemented so far.
 So far, TiDB has the follwing tables related to stage events:
 
 * **events\_stages\_current**: Current stage events
-* **events\_stages\_history**: The most recent stage events for each thread
+* **events\_stages\_history**: The most recent stage events for each connection
 * **events\_stages\_history\_long**: The most recent stage events overall
 
 Summary tables related to stage events will not be implemented so far.
@@ -98,8 +98,8 @@ We would like to make TiDB's performance_schema to be compatible w/ MySQL's stat
 <br/><br/>
 So far, all tables in TiDB `performance_schema` can find an equivalent in MySQL, and all fields are the same.
 
-###To Be Clarified
-* Many tables in MySQL `performance_schema` has the field `THREAD_ID`, but TiDB is written in Go, goroutines is much lighter than thread, and is not that fixed (one thread for one connection), then, what to put in `THREAD_ID` field?
+###Special Notes
+* Many tables in MySQL `performance_schema` has the field `THREAD_ID`, but TiDB is written in Go, and goroutines is much lighter than thread, and is not that fixed (one thread for one connection), then, we instead put connection id into the `THREAD_ID` field, but the field name will still be kept for compatibility concerns.
 
 ##References
 [1] [MySQL 5.7 Reference Manual  /  MySQL Performance Schema](http://dev.mysql.com/doc/refman/5.7/en/performance-schema.html)
