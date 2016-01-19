@@ -54,7 +54,7 @@ Like MySQL, we also have several setup tables:
 
 The initialization values of these setup tables are also similar to MySQL 5.7 except:
 
-* TiDB does not have `PROCEDURE/TRIGGER`, also does not have `information_schema` yet
+* TiDB does not have `PROCEDURE/TRIGGER` objects, also does not imeplement process tables in `information_schema` yet
 * TiDB has 3 instrumentation components so far:
 	* **Stage**: An instrumented stage event.
 	* **Statement**: An instrumented statemenet event.
